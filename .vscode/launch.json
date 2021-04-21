@@ -1,0 +1,167 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "pr interactive test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "-d",
+                "pr"
+            ]
+        },{
+            "name": "pr commandline test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "-d",
+                "pr",
+                "--title",
+                "PrCooltitle",
+                "--description",
+                "PrExtendedDescription",
+            ]
+        },
+        {
+            "name": "pr list test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "-d",
+                "pr",
+                "--list"
+            ]
+        },
+        {
+            "name": "pr set default test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "-d",
+                "pr",
+                "--set-default-branch",
+                "release/test"
+            ]
+        },
+        {
+            "name": "config interactive test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal", "args": [
+                "-d",
+                "config"
+            ]
+
+        },
+        {
+            "name": "config add server",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal", "args": [
+                "-d",
+                "config",
+                "--server-base-url","https://www.example.com/mybitbucketinstance",
+                "--server-shortcut","mybitbucketinstance",
+                "--username","myuser",
+                "--token"," mytoken"                
+            ]
+
+        },
+        {
+            "name": "config change default server",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal", "args": [
+                "-d",
+                "config",
+                "--set-default-server","mybitbucketinstance"
+            ]
+
+        },
+        {
+            "name": "config PR title-description",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal", "args": [
+                "-d",
+                "config",
+                "--pr-set-repo-title","false",
+                "--pr-set-empty-description","false"
+            ]
+
+        },
+        {
+            "name": "list remote projects",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal", "args": [
+                "-d",
+                "remote"
+            ]
+
+        },
+        {
+            "name": "list remote projects specific server",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal", "args": [
+                "-d",
+                "remote",
+                "--server",
+                "mybitbucketinstance"
+            ]
+
+        },
+        {
+            "name": "list remote repos",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal", "args": [
+                "-d",
+                "remote",
+                "--p",
+                "UTILITIES"
+            ]
+
+        },
+        {
+            "name": "config repos remote test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal", "args": [
+                "-d",
+                "remote",
+                "--p",
+                ""
+            ]
+
+        },
+        {
+            "name": "no args",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        }
+        
+    ]
+}
