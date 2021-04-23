@@ -420,10 +420,6 @@ def initialize(args):
     
 def main():
     global __version__
-     # Set log level
-     #TODO set from initialize function
-    loglevel=logging.DEBUG
-    logging.basicConfig(format='%(message)s', level=loglevel)
 
     # create top level parser
     parser = argparse.ArgumentParser(description="Bitbucker Server python client",epilog="Version: {}".format(__version__),allow_abbrev=True)
@@ -461,6 +457,9 @@ def main():
     # Invoke function associated with requested command
     if 'func' in arguments:
         arguments.func(arguments)
+    else:
+        parser.print_help(sys.stderr)
+    
 
 
 if __name__ == "__main__":
