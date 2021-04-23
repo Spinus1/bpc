@@ -13,7 +13,9 @@ import json
 from pathlib import Path
 import click
 
-version="v0.99.0-dev"
+from version import __version__
+
+
 configFileFolder=str(Path.home())+os.path.sep+".bpc"
 configFile=configFileFolder+os.path.sep+"config.json"
 configData=None
@@ -166,7 +168,7 @@ def do_list(args):
             try :
                 repoList=remote.projects[args.project].repos.list()
             except:
-                logging.error("Project {} does not existing in server {}".format(args.project,config['shortcut']))
+                logging.error("Project {} does not existing in server {}".format(args.project,configData['servers'][serverToUse]['shortcut']))
 
             for repo in repoList:
                 printBitbucketRepoInfo(repo)
@@ -417,14 +419,14 @@ def initialize(args):
 
     
 def main():
-    global version
+    global __version__
      # Set log level
      #TODO set from initialize function
     loglevel=logging.DEBUG
     logging.basicConfig(format='%(message)s', level=loglevel)
 
     # create top level parser
-    parser = argparse.ArgumentParser(description="Bitbucker Server python client",epilog="Version:{}".format(version),allow_abbrev=True)
+    parser = argparse.ArgumentParser(description="Bitbucker Server python client",epilog="Version: {}".format(__version__),allow_abbrev=True)
     parser.add_argument('-d',action='store_true',help='print debug logs')
     subparsers = parser.add_subparsers(title='subcommands', description='valid subcommands',help='sub-command help',dest='subparser_name')
 

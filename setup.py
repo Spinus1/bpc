@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 from cx_Freeze import setup, Executable
+from version import __version__
  
 includefiles = ['README.md','CHANGELOG.md']
  
@@ -11,7 +12,7 @@ if sys.platform == "win32":
     base = "Win32GUI"
  
 setup(  name = "bpc",
-        version = "0.9.0",
+        version = __version__,
         description = "Bitbucket Python Client",
         options = {'build_exe': {'include_files':includefiles}},
         executables = [Executable("bpc.py", base=base)])
