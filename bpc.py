@@ -248,7 +248,7 @@ def do_pr(args):
                
                 prDescription=""
                 
-                if 'true' == configData['common']['pr_set_empty_description']:
+                if 'false' == configData['common']['pr_set_empty_description']:
                     prDescription=get_pr_description()
                 
                 # Retrieve default brach
