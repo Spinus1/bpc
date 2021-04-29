@@ -347,7 +347,7 @@ def addServer(args):
     global configData
 
     # Check if change of default server is requested
-    if args.set_default_server:
+    if 'set_default_server' in args and args.set_default_server:
         if args.set_default_server in configData['servers']:
             logging.info("Setting server {} as default one".format(args.set_default_server))
             configData['common']['default_server']=args.set_default_server
