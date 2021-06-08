@@ -296,7 +296,7 @@ def createConfig():
     global configData
     common={"version":"1","pr_message": "true", "pr_message_commits": "false","default_server":"","pr_title_reponame":"true","pr_set_repo_title":"true","pr_set_empty_description":"true"}
     configData={"common":common,"servers":{},"url-shortcut-map":{},"repositories":{}}
-    logging.info(configData)
+    logging.debug(configData)
 
 
 def loadConfig(args):
@@ -306,9 +306,11 @@ def loadConfig(args):
     global configData
 
     if not os.path.exists(configFile) or os.stat(configFile).st_size == 0:
-        logging.info("Configuration file is empty, please add at least one Bitbucket server entry")
+        logging.info("Configuration file is empty, please add at least one Bitbucket server entry, and re-launch the command...")
         createConfig()
         addServer(args)
+        sys.exit(0)
+
 
     try:
         with open(configFile) as temp:
