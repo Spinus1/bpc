@@ -60,7 +60,7 @@ def getLocalRepoInfo():
     if not path.exists(".git"):
         criticalError("Please invoke bpc in folder containing git repository")
 
-    logging.info("final dir "+ os.getcwd())
+    logging.debug("final dir "+ os.getcwd())
 
     repo = Repo(".")
     
@@ -149,7 +149,7 @@ def printBitbucketRepoInfo(repo):
 
 def do_list(args):
     "Lists projects or repositories"
-    initialize(args)
+    loadConfig(args)
     printHeader()
     serverToUse=currentServer
 
@@ -185,7 +185,7 @@ def do_pr(args):
     """Manages Pull Requests"""
     logging.debug("do_pr...")
 
-    initialize(args)
+    loadConfig(args)
     
     printHeader()
 
@@ -264,12 +264,13 @@ def do_pr(args):
                 if None == prTargetBranch or "" == prTargetBranch:
                     prTargetBranch=defaultBranch
 
-                logging.info("PR recap:\n\tTitle: '{}'".format(prTitle))
-                logging.info("\tDescription: '{}'".format(prDescription))
-                logging.info("\tTarget branch:'{}'".format(prTargetBranch))
+                logging.debug("PR recap:\n\tTitle: '{}'".format(prTitle))
+                logging.debug("\tDescription: '{}'".format(prDescription))
+                logging.debug("\tTarget branch:'{}'".format(prTargetBranch))
 
                 try:
                     res=remote.projects[info.repositoryProject].repos[info.repositoryName].pull_requests.create(prTitle,info.branch,prTargetBranch,prDescription)
+                    logging.info("PR created:")
                     printPRinfo(res)
                 except stashy.errors.GenericException as e:
                     handleStashyException(e)
@@ -327,7 +328,7 @@ def do_config(args):
     "handle command line config option"
     logging.debug("do_config...")
 
-    initialize(args)
+    loadConfig(args)
     # List available server
     if args.list:
         logging.info("Server list: {}".format(configData["servers"])) 
@@ -404,19 +405,6 @@ def addServer(args):
     writeConfig()
 
 
-
-
-def initialize(args):
-    # Set log level
-    loglevel=logging.INFO
-    if args.d:
-        loglevel=logging.DEBUG
-        logging.basicConfig(format='%(levelname)s: %(message)s', level=loglevel)
-    else:
-        logging.basicConfig(format='%(message)s', level=loglevel)
-
-    loadConfig(args)
-
     
 def main():
     global __version__
@@ -454,6 +442,15 @@ def main():
 
     # Parse command line arguments
     arguments=parser.parse_args()
+
+    # Set log level
+    loglevel=logging.INFO
+    if arguments.d:
+        loglevel=logging.DEBUG
+        logging.basicConfig(format='%(levelname)s: %(message)s', level=loglevel)
+    else:
+        logging.basicConfig(format='%(message)s', level=loglevel)
+
     # Invoke function associated with requested command
     if 'func' in arguments:
         arguments.func(arguments)
