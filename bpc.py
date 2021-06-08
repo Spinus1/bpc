@@ -234,21 +234,20 @@ def do_pr(args):
 
             # PR creation
             else:
-                defaultTitle="Insert title"
-                # Add repo name to PR title
-                if 'true' == configData['common']['pr_set_repo_title']:
-                    defaultTitle="[{}] - ".format(info.repositoryName) + defaultTitle
-
                 if not args.title:
-                    prTitle=click.edit(defaultTitle,defaultEditor)
+                    prTitle=click.edit("Insert title",defaultEditor)
                     if None == prTitle and "" != prTitle:
-                        prTitle=defaultTitle
+                        prTitle="Plese customize the title"
                 else:
                     prTitle=args.title 
+
+                # Add repo name to PR title
+                if 'true' == configData['common']['pr_set_repo_title']:
+                    prTitle="[{}] - ".format(info.repositoryName) + prTitle
                
                 prDescription=""
                 
-                if 'false' == configData['common']['pr_set_empty_description']:
+                if 'true' == configData['common']['pr_set_empty_description']:
                     prDescription=get_pr_description()
                 
                 # Retrieve default brach
@@ -432,8 +431,8 @@ def main():
     parser_config.add_argument('--username', help='Username to access Bitbucket')
     parser_config.add_argument('--token', help='Token to access Bitbucket')
     parser_config.add_argument('--set-default-server', help='Set default server to query for projects/repositories')
-    parser_config.add_argument('--pr-set-repo-title', help='Add repository name to Pull Request title')
-    parser_config.add_argument('--pr-set-empty-description', help='Do not add any description to Pull Request')
+    parser_config.add_argument('--pr-set-repo-title',choices=['true','false'], help='Add repository name to Pull Request title')
+    parser_config.add_argument('--pr-set-empty-description',choices=['true','false'], help='Do not add any description to Pull Request')
     parser_config.set_defaults(func=do_config)
 
     # create the parser for the "remote" command
