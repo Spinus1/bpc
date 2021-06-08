@@ -181,6 +181,12 @@ def do_list(args):
     return
 
 
+def areSameUrl(first,second):
+    """Compare url item to see if repository server matches bcp configured one"""
+    f=urllib.parse.urlparse(first)
+    s=urllib.parse.urlparse(second)
+    return (f.path == s.path ) and (f.hostname == s.hostname) and (f.scheme == s.scheme) and (f.port == s.port)
+
 def do_pr(args): 
     """Manages Pull Requests"""
     logging.debug("do_pr...")
@@ -200,8 +206,8 @@ def do_pr(args):
 
         # Use the same server of local git repository
         baseurl=config['baseurl']
-        if info.baseurl != baseurl:
-            criticalError("Bitbucket URL {} different {}".format(info.baseurl,baseurl))
+        if not areSameUrl(info.baseurl,baseurl):
+            criticalError("Bitbucket URL {} is different from repository one {}".format(info.baseurl,baseurl))
         else :
 
             # Set PR default branch
