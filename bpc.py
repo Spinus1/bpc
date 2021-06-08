@@ -43,9 +43,8 @@ class repoInfo:
         self.url=url
 
 
-def getLocalRepoInfo():
-    "Retrieve git information from working directory"
-    
+def getRepo() -> Repo:
+    """Get repository handle from current folder"""  
     	#search the folder containing .git
     drive=os.path.splitdrive(os.getcwd())[0]
     logging.debug("Drive is {}".format(drive))
@@ -62,7 +61,12 @@ def getLocalRepoInfo():
 
     logging.debug("final dir "+ os.getcwd())
 
-    repo = Repo(".")
+
+    return Repo(".")
+
+def getLocalRepoInfo():
+    "Retrieve git information from working directory"
+    repo=getRepo()
     
     # Retrieve repo uri, then retrieve repo name and project
     # Bitbucket server URL are like:
@@ -240,6 +244,28 @@ def do_pr(args):
 
             # PR creation
             else:
+                autofetch=True
+
+                repo=getRepo()
+                defaultOrigin=repo.remotes[0]
+                
+                if True == autofetch:
+                    logging.info(f'Fetching from remote {defaultOrigin}')
+                    defaultOrigin.fetch()
+                    branch=repo.active_branch.name
+                    try:
+                        if list(repo.iter_commits(f'{branch}..{branch}@{{u}}')) or list(repo.iter_commits(f'{branch}@{{u}}..{branch}')):
+                            logging.info(f'Local brach {branch} contains new commit, pushing to remote server')
+                            defaultOrigin.push(branch)
+                    except Exception as e:
+                        # Repository not yet pushed to upstream
+                        if 128 == e.status:
+                            logging.info(f'Local brach {branch} will be pushed, since it is not present in remote {defaultOrigin}')
+                            defaultOrigin.push(f'{branch}:{branch}',None,set_upstream=True)
+                        else:
+                            raise
+                
+
                 if not args.title:
                     prTitle=click.edit("Insert title",defaultEditor)
                     if None == prTitle and "" != prTitle:
