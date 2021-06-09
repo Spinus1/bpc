@@ -22,6 +22,11 @@ configData=None
 currentServer=None
 defaultEditor=None
 
+def errorExit(msg: str):
+    """Raise error and exit"""
+    logging.error("Error: {}, exiting!".format(msg))
+    sys.exit(1)
+
 
 def criticalError(msg: str):
     "Raise critical error and exit"
@@ -248,6 +253,9 @@ def do_pr(args):
 
                 repo=getRepo()
                 defaultOrigin=repo.remotes[0]
+
+                if list(repo.index.diff(None) or repo.index.diff(repo.head.commit)):
+                    errorExit("Please commit all uncommitted changes before creating PR")
                 
                 if True == autofetch:
                     logging.info(f'Fetching from remote {defaultOrigin}')
