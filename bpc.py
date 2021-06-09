@@ -12,6 +12,7 @@ import urllib
 import json
 from pathlib import Path
 import click
+import distutils.core
 
 from version import __version__
 
@@ -31,7 +32,7 @@ def errorExit(msg: str):
 def criticalError(msg: str):
     "Raise critical error and exit"
     logging.critical("Critical error: {}, exiting!".format(msg))
-    sys.exit(1)
+    sys.exit(2)
 
 def handleStashyException(e):
     logging.error("Error creating PR: '{}'".format(e.data['errors'][0]['message']))
@@ -252,14 +253,20 @@ def do_pr(args):
                 autofetch=True
 
                 repo=getRepo()
+                # TODO what to do with multiple remotes?
                 defaultOrigin=repo.remotes[0]
 
-                if list(repo.index.diff(None) or repo.index.diff(repo.head.commit)):
-                    errorExit("Please commit all uncommitted changes before creating PR")
+                if not isConfigOptionEnabled('pr_set_ignore_dirty_workarea'):
+                    if list(repo.index.diff(None) or repo.index.diff(repo.head.commit)):
+                        errorExit("Please commit all uncommitted changes before creating PR")
+                else:
+                    logging.warning("Ignoring dirty working area")
                 
-                if True == autofetch:
-                    logging.info(f'Fetching from remote {defaultOrigin}')
+                if isConfigOptionEnabled('pr_set_auto_fetch'):
+                    logging.info(f'Fetching from remote: {defaultOrigin}')
                     defaultOrigin.fetch()
+
+                if isConfigOptionEnabled('pr_set_auto_push'):
                     branch=repo.active_branch.name
                     try:
                         if list(repo.iter_commits(f'{branch}..{branch}@{{u}}')) or list(repo.iter_commits(f'{branch}@{{u}}..{branch}')):
@@ -282,12 +289,12 @@ def do_pr(args):
                     prTitle=args.title 
 
                 # Add repo name to PR title
-                if 'true' == configData['common']['pr_set_repo_title']:
+                if isConfigOptionEnabled('pr_set_repo_title'):
                     prTitle="[{}] - ".format(info.repositoryName) + prTitle
                
                 prDescription=""
                 
-                if 'true' == configData['common']['pr_set_empty_description']:
+                if isConfigOptionEnabled('pr_set_empty_description'):
                     prDescription=get_pr_description()
                 
                 # Retrieve default brach
@@ -333,11 +340,22 @@ def writeConfig():
 def createConfig():
     """Create config file from scratch"""
     global configData
-    common={"version":"1","pr_message": "true", "pr_message_commits": "false","default_server":"","pr_title_reponame":"true","pr_set_repo_title":"true","pr_set_empty_description":"true"}
+    common={"version":"2","pr_message": "true", 
+    "pr_message_commits": "false","default_server":"",
+    "pr_title_reponame":"true","pr_set_repo_title":"true",
+    "pr_set_empty_description":"true",
+    "pr_set_auto_fetch":"true",
+    "pr_set_auto_push":"true"
+    }
     configData={"common":common,"servers":{},"url-shortcut-map":{},"repositories":{}}
     logging.debug(configData)
 
-
+def isConfigOptionEnabled(option: str):
+    if option in configData['common']:
+        return bool(distutils.util.strtobool(configData['common'][option]))
+    else:
+        return False
+    
 def loadConfig(args):
     "Load configuration file"
     
@@ -374,11 +392,15 @@ def do_config(args):
     if args.list:
         logging.info("Server list: {}".format(configData["servers"])) 
     # Configure global options
-    elif args.pr_set_repo_title or args.pr_set_empty_description: 
+    elif args.pr_set_repo_title or args.pr_set_empty_description or args.pr_set_auto_fetch or args.pr_set_auto_push : 
         if args.pr_set_repo_title:
             configData['common']['pr_set_repo_title']=args.pr_set_repo_title
         if args.pr_set_empty_description:
             configData['common']['pr_set_empty_description']=args.pr_set_empty_description
+        if args.pr_set_auto_fetch:
+            configData['common']['pr_set_auto_fetch']=args.pr_set_auto_fetch
+        if args.pr_set_auto_push:
+            configData['common']['pr_set_auto_push']=args.pr_set_auto_push    
         writeConfig()
     # Add a new server
     else:
@@ -473,6 +495,8 @@ def main():
     parser_config.add_argument('--set-default-server', help='Set default server to query for projects/repositories')
     parser_config.add_argument('--pr-set-repo-title',choices=['true','false'], help='Add repository name to Pull Request title')
     parser_config.add_argument('--pr-set-empty-description',choices=['true','false'], help='Do not add any description to Pull Request')
+    parser_config.add_argument('--pr-set-auto-fetch',choices=['true','false'], help='Fetch for latest changes before creating Pull Request')
+    parser_config.add_argument('--pr-set-auto-push',choices=['true','false'], help='Push any new commit to remote server before creating Pull Request')
     parser_config.set_defaults(func=do_config)
 
     # create the parser for the "remote" command
