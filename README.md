@@ -59,14 +59,25 @@ bpc pr --title "PR title" --description "PR description"
 
 ### Additional settings
 * A default target branch can be specified for each needed repository, invoke command:
-	* `bpc pr --set-default-branch myBranch`
+	```
+	bpc pr --set-default-branch myBranch
+	```
 * Repository name can be added to PR title: it can be enable disabled:
 	```
 	bpc config --pr-set-repo-title [true|false]
 	```
-* To avoid being asked for PR description, use the following command:
+* To enabled disable request for PR description, use the following command:
 	```
 	bpc config --pr-set-empty-description [true|false]
+	```
+ * To enable/disable fetch changes before opening PR, use the following command:
+	```
+	bpc config --pr-set-auto-fetch [true|false]
+	```
+	
+* To enable/disable pushing changes to remote server before opening PR, use the following command:
+	```
+	bpc config --pr-set-auto-push [true|false]
 	```
 
 ### Listing PRs
@@ -95,9 +106,7 @@ bcp is using Click library to edit information, to change default editor in Linu
 
 # bpc development
 ## TODO
-* Fix logging
 * Pretty print servers list
-* Check if current branch was already pushed
 * Be able to add per repository default reviewers
 * Select editor from bpc
 * Clone repositories directly from bpc
