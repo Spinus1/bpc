@@ -79,6 +79,11 @@ bpc pr --title "PR title" --description "PR description"
 	```
 	bpc config --pr-set-auto-push [true|false]
 	```
+* To specify Pull Request custom reviewers (per project), use the command:
+	```
+	bpc config --set-default-pr-reviewers=userA,userB --project=projectName --server=serverShortcut
+	```
+	* Note: Bitbucket username are case sensitive
 
 ### Listing PRs
 To list all the PR pending for a repository, just invoke command:
@@ -107,7 +112,6 @@ bcp is using Click library to edit information, to change default editor in Linu
 # bpc development
 ## TODO
 * Pretty print servers list
-* Be able to add per repository default reviewers
 * Select editor from bpc
 * Clone repositories directly from bpc
 

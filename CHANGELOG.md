@@ -4,10 +4,12 @@
 * Configuration file changes :
 	* adding new options --pr-set-auto-fetch and --pr-set-auto-push (pr_set_ignore_dirty_workarea is just for bpc developers)      
 	* Adding isConfigOptionEnabled function: it returns false if config option is missing: so config file does not need to be updated
+	* Adding ability to specify per project custom reviewers (--set-default-pr-reviewers)
 	* Update config version to v 2
 * Autofetch: fetch for upstream modification before creating PR
 * Autopush: push latest changes before opening PR
 * Abort PR creation if local repo contains uncommitted changes
+
 
 **Bugfixes**:
 * Fix issue when bpc config url does not contain username, but git repo does

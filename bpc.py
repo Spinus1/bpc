@@ -151,8 +151,7 @@ def printPRinfo(pr):
     
     it=iter(pr["reviewers"])
     for reviewer in it:
-        logging.info ("\t\t{} ".format(reviewer["user"]["displayName"]))
-        next(it,None)
+        logging.info ("\t\t{} -\t {}".format(reviewer["user"]["displayName"],reviewer["user"]["name"]))
     
 def printProjectInfo(prj):
     logging.info ("\t{} ({})".format(prj["key"],prj["name"]))
@@ -314,12 +313,19 @@ def do_pr(args):
                 if None == prTargetBranch or "" == prTargetBranch:
                     prTargetBranch=defaultBranch
 
+                # Search for default reviewers
+                prjkey=info.basepath+"-"+info.repositoryProject
+                prReviewers=None
+                if prjkey in configData['projects']: 
+                    prReviewers=configData['projects'][prjkey]['pr-reviewers']
+
                 logging.debug("PR recap:\n\tTitle: '{}'".format(prTitle))
                 logging.debug("\tDescription: '{}'".format(prDescription))
                 logging.debug("\tTarget branch:'{}'".format(prTargetBranch))
+                logging.debug("\tReviewers:'{}'".format(prReviewers))
 
                 try:
-                    res=remote.projects[info.repositoryProject].repos[info.repositoryName].pull_requests.create(prTitle,info.branch,prTargetBranch,prDescription)
+                    res=remote.projects[info.repositoryProject].repos[info.repositoryName].pull_requests.create(prTitle,info.branch,prTargetBranch,prDescription,reviewers=prReviewers.split(","))
                     logging.info("PR created:")
                     printPRinfo(res)
                 except stashy.errors.GenericException as e:
@@ -389,7 +395,7 @@ def loadConfig(args):
                 if 'pr_set_auto_push' not in configData['common']:
                     configData['common']['pr_set_auto_push']="true"
                 if 'projects' not in configData['common']:
-                    configData['common']['projects']={}
+                    configData['projects']={}
                 writeConfig()
 
 
@@ -414,6 +420,7 @@ def do_config(args):
     # List available server
     if args.list:
         logging.info("Server list: {}".format(configData["servers"])) 
+
     # Configure global options
     elif args.pr_set_repo_title or args.pr_set_empty_description or args.pr_set_auto_fetch or args.pr_set_auto_push : 
         if args.pr_set_repo_title:
@@ -425,6 +432,41 @@ def do_config(args):
         if args.pr_set_auto_push:
             configData['common']['pr_set_auto_push']=args.pr_set_auto_push    
         writeConfig()
+
+    # Configure PR reviewers
+    elif args.set_default_pr_reviewers:
+        if not args.project:
+            errorExit ("Please specify project using --project flag")
+
+        if not args.server:
+            errorExit ("Please specify server using --server flag")
+        elif args.server not in configData['servers']:
+            errorExit ("Server '{}' not configured".format(args.server))
+
+        logging.debug ("Reviewers list: {}".format(args.set_default_pr_reviewers))
+
+        #load existing prjsettings
+        prjkey=f'{args.server}-{args.project}'
+        # TODO seems a common pattern to check/create config elements, create generic function
+        # Load project lists
+        projects=configData['projects']
+
+        if prjkey in projects:
+            prjsettings=projects[prjkey]
+        else:
+            prjsettings={}
+
+        #if 'pr-reviewers' in prjsettings:
+        #    prsettings=prjsettings['pr-reviewers'] 
+        #else:
+        #    prsettings={}
+
+        prjsettings['pr-reviewers']=args.set_default_pr_reviewers
+        projects[prjkey]=prjsettings
+        configData['projects']=projects
+
+        writeConfig()
+
     # Add a new server
     else:
         addServer(args)
@@ -520,6 +562,9 @@ def main():
     parser_config.add_argument('--pr-set-empty-description',choices=['true','false'], help='Do not add any description to Pull Request')
     parser_config.add_argument('--pr-set-auto-fetch',choices=['true','false'], help='Fetch for latest changes before creating Pull Request')
     parser_config.add_argument('--pr-set-auto-push',choices=['true','false'], help='Push any new commit to remote server before creating Pull Request')
+    parser_config.add_argument('--set-default-pr-reviewers', help='Comma separate list of users that will be used as reviewers for Pull Request; it is mandatory to specify project using --project option')
+    parser_config.add_argument('--project', help='Specifies project when setting Pull Request reviewers')
+    parser_config.add_argument('--server', help='Specifies server when setting Pull Request reviewers')
     parser_config.set_defaults(func=do_config)
 
     # create the parser for the "remote" command

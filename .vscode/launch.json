@@ -40,7 +40,7 @@
             "name": "pr list test",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "bpc.py",
             "console": "integratedTerminal",
             "args": [
                 "-d",
@@ -109,6 +109,20 @@
                 "config",
                 "--pr-set-repo-title","false",
                 "--pr-set-empty-description","false"
+            ]
+
+        },
+        {
+            "name": "config PR reviewers",
+            "type": "python",
+            "request": "launch",
+            "program": "bpc.py",
+            "console": "integratedTerminal", "args": [
+                "-d",
+                "config",
+                "--set-default-pr-reviewers","ruby,diamond",
+                "--server","internal",
+                "--project","sintools"
             ]
 
         },
