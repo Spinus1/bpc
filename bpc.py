@@ -13,12 +13,16 @@ import json
 from pathlib import Path
 import click
 import distutils.core
+import shutil
+from datetime import datetime
 
 from version import __version__
 
 
+configFileVersion=2
 configFileFolder=str(Path.home())+os.path.sep+".bpc"
 configFile=configFileFolder+os.path.sep+"config.json"
+configFileBackup=configFileFolder+os.path.sep+"config.json.backup"
 configData=None
 currentServer=None
 defaultEditor=None
@@ -340,14 +344,14 @@ def writeConfig():
 def createConfig():
     """Create config file from scratch"""
     global configData
-    common={"version":"2","pr_message": "true", 
-    "pr_message_commits": "false","default_server":"",
-    "pr_title_reponame":"true","pr_set_repo_title":"true",
-    "pr_set_empty_description":"true",
-    "pr_set_auto_fetch":"true",
-    "pr_set_auto_push":"true"
+    common={f'"version":"{configFileVersion}","pr_message": "true", \
+    "pr_message_commits": "false","default_server":"",\
+    "pr_title_reponame":"true","pr_set_repo_title":"true",\
+    "pr_set_empty_description":"true",\
+    "pr_set_auto_fetch":"true",\
+    "pr_set_auto_push":"true"'
     }
-    configData={"common":common,"servers":{},"url-shortcut-map":{},"repositories":{}}
+    configData={"common":common,"servers":{},"url-shortcut-map":{},"repositories":{},"projects":{}}
     logging.debug(configData)
 
 def isConfigOptionEnabled(option: str):
@@ -372,6 +376,25 @@ def loadConfig(args):
     try:
         with open(configFile) as temp:
             configData = json.load(temp)
+
+            #Upgrading config file
+            if configData['common']['version']!=configFileVersion:
+                logging.warning("Current config file is using old version {}: upgrading to version {}".format(configData['common']['version'],configFileVersion))
+                shutil.copyfile(configFile, configFileBackup+datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
+                configData['common']['version']=configFileVersion
+
+                #since config v2
+                if 'pr_set_auto_fetch' not in configData['common']:
+                    configData['common']['pr_set_auto_fetch']="true"
+                if 'pr_set_auto_push' not in configData['common']:
+                    configData['common']['pr_set_auto_push']="true"
+                if 'projects' not in configData['common']:
+                    configData['common']['projects']={}
+                writeConfig()
+
+
+                
+
     except :
         logging.error("Configuration file '{}' is corrupted, please launch bcp with \"config\" command!".format(configFile))
     
