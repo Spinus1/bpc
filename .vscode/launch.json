@@ -120,8 +120,8 @@
             "console": "integratedTerminal", "args": [
                 "-d",
                 "config",
-                "--set-default-pr-reviewers","ruby,diamond",
-                "--server","internal",
+                "--set-default-pr-reviewers","ruby,diamond,pearl",
+                "--server","mybitbucket",
                 "--project","sintools"
             ]
 
@@ -186,3 +186,4 @@
         
     ]
 }
+

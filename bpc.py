@@ -5,6 +5,7 @@ from os import path
 import sys    
 import logging
 import argparse
+from git import exc
 import stashy
 import git
 from git import Repo
@@ -30,6 +31,7 @@ defaultEditor=None
 def errorExit(msg: str):
     """Raise error and exit"""
     logging.error("Error: {}, exiting!".format(msg))
+
     sys.exit(1)
 
 
@@ -340,11 +342,25 @@ def writeConfig():
     try:
         if not os.path.exists(configFileFolder):
             os.makedirs(configFileFolder)
-        with open(configFile, 'w+') as outfile:
-            json.dump(configData, outfile,indent=4, sort_keys=True)
-    except :
-        logging.error("Error creating config file..")
-        return None
+        
+        #create a backup copy
+        shutil.copyfile(configFile, configFileBackup)
+        
+        try:
+            with open(configFile, 'w+') as outfile:
+                json.dump(configData, outfile,indent=4, sort_keys=True)
+                
+        except Exception as e:
+            #restore original file
+            shutil.copyfile(configFileBackup, configFile)
+            logging.error("Error dumping json data to config file...")
+            raise
+
+    except Exception as e:
+        logging.error("Error writing creating config file...")
+        raise
+
+    return None
 
 
 def createConfig():
