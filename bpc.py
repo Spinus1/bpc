@@ -89,7 +89,7 @@ def getLocalRepoInfo():
     
     remotes=repo.remotes
     remote=remotes[0]
-    o=urllib.parse.urlparse(remote.url)
+    o=urllib.parse.urlparse(remote.url.lower())
     
     it=iter(o.path.split("/"))
     # get rid of first empty token
@@ -349,7 +349,7 @@ def writeConfig():
         try:
             with open(configFile, 'w+') as outfile:
                 json.dump(configData, outfile,indent=4, sort_keys=True)
-                
+
         except Exception as e:
             #restore original file
             shutil.copyfile(configFileBackup, configFile)
@@ -462,7 +462,7 @@ def do_config(args):
         logging.debug ("Reviewers list: {}".format(args.set_default_pr_reviewers))
 
         #load existing prjsettings
-        prjkey=f'{args.server}-{args.project}'
+        prjkey=f'{args.server.lower()}-{args.project.lower()}'
         # TODO seems a common pattern to check/create config elements, create generic function
         # Load project lists
         projects=configData['projects']
@@ -495,7 +495,7 @@ def addServer(args):
     if 'set_default_server' in args and args.set_default_server:
         if args.set_default_server in configData['servers']:
             logging.info("Setting server {} as default one".format(args.set_default_server))
-            configData['common']['default_server']=args.set_default_server
+            configData['common']['default_server']=args.set_default_server.lower()
             writeConfig()
             sys.exit(0)
         else:
@@ -513,17 +513,20 @@ def addServer(args):
         shortcut=input("Bitbucket shortcut: ")
     else:
         shortcut=args.server_shortcut
+    shortcut=shortcut.lower()
 
     # remove trailing slash to avoid comparison problems 
     if not configcall or not args.server_base_url:
         baseurl=input("Bitbucket address: ").rstrip('/')
     else:
         baseurl=args.server_base_url
+    baseurl=baseurl.lower()
 
     if not configcall or not args.username:
         user=input("User name for Bitbucket:")
     else:
         user=args.username
+    user=user.lower()
    
     if not configcall or not args.token:
         token=input("Token used to acces Bitbucket:")
