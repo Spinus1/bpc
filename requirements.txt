@@ -1,3 +1,4 @@
-click==7.1.2
 stashy==0.6
-GitPython==3.1.14
+click==7.1.2
+cx_Freeze==6.6
+GitPython==3.1.17
