@@ -94,12 +94,13 @@ bpc pr --list
 ## Listing projects and repositories
 List all the projects in default Bitbucket server (*projects that the current user has access to*):
 ```
-bpc list 
+bpc remote 
 ```
+Add flag `--server` to specify the server that will be queried
 
 List all repositories on a specific Bitbucket project:
 ```
-bpc list --project  PROJECT_NAME
+bpc remote --project  PROJECT_NAME
 ```
 
 ## Select editor

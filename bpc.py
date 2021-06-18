@@ -246,10 +246,9 @@ def do_pr(args):
                 try:
                    
                     res=remote.projects[info.repositoryProject].repos[info.repositoryName].pull_requests.list()
-                    it=iter(res)
-                    for pr in it:
+                    for pr in res:
                             printPRinfo(pr)
-                            next(it,None)
+                            
                 except stashy.errors.GenericException as e:
                     handleStashyException(e)
 
