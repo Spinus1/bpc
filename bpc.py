@@ -319,6 +319,10 @@ def do_pr(args):
                 prReviewers=None
                 if prjkey in configData['projects']: 
                     prReviewers=configData['projects'][prjkey]['pr-reviewers']
+                if prReviewers:
+                    prrevlist=prReviewers.split(",")
+                else:
+                    prrevlist=None
 
                 logging.debug("PR recap:\n\tTitle: '{}'".format(prTitle))
                 logging.debug("\tDescription: '{}'".format(prDescription))
@@ -326,7 +330,7 @@ def do_pr(args):
                 logging.debug("\tReviewers:'{}'".format(prReviewers))
 
                 try:
-                    res=remote.projects[info.repositoryProject].repos[info.repositoryName].pull_requests.create(prTitle,info.branch,prTargetBranch,prDescription,reviewers=prReviewers.split(","))
+                    res=remote.projects[info.repositoryProject].repos[info.repositoryName].pull_requests.create(prTitle,info.branch,prTargetBranch,prDescription,reviewers=prrevlist)
                     logging.info("PR created:")
                     printPRinfo(res)
                 except stashy.errors.GenericException as e:
