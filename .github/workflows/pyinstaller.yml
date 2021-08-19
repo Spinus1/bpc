@@ -7,8 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  build-windows:
+    name: Build exe with pyinstaller
     runs-on: ubuntu-latest
 
     steps:
@@ -23,3 +23,20 @@ jobs:
       with:
         name: bpc
         path: src/dist/windows
+  
+  build-linux:
+    name: Build executable with pyinstaller
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-linux@main
+      with:
+        path: src
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: bpc
+        path: src/dist/linux
