@@ -4,7 +4,7 @@
 ## Dependencies
 `bpc` is Python 3 based.
 To install dependencies just launch:
-* `pip install -r requirements.txt`
+* `pip install -r src/requirements.txt`
 
 Or install them manually
 ```
@@ -124,9 +124,9 @@ You can retrieve some debug configurations is `.vscode/.launch.json`
     * `pip install pipreqs` 
 * just launch `pipreqs` to get requirements.txt list
 
-# Generating executable
-1. Install *cx-freeze* package with pip
-2. Launch script `python setup.py build`
+# Building executable
+1. Install pyinstaller `pip install pyinstaller`
+2. Launch comand `pyinstaller.exe src/bpc.spec`
 
 # Inspiration
 [lab](https://github.com/zaquestion/lab/blob/master/README.md) for gitlab has given me the idea to implement this client, but is very far to have comparable features
