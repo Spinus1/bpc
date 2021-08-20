@@ -1,20 +1,19 @@
-name: Package Application with Pyinstaller
+name: Release package
 
 on:
   push:
-    branches: [ master, develop]
-  pull_request:
-    branches: [ master ]
+    tags:
+      - "v*"
 
 jobs:
   build-windows:
-    name: Build exe with pyinstaller
+    name: Build Windows executable
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Package Application
+    - name: Package Windows Application
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: src
@@ -25,13 +24,13 @@ jobs:
         path: src/dist/windows
   
   build-linux:
-    name: Build executable with pyinstaller
+    name: Build Linux executable
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Package Application
+    - name: Package Linux Application
       uses: JackMcKew/pyinstaller-action-linux@main
       with:
         path: src
@@ -43,8 +42,8 @@ jobs:
 
 
 
-  pre-release:
-    name: "Pre Release"
+  tagged-release:
+    name: "Taggerd Release"
     runs-on: "ubuntu-latest"
     needs: [build-windows, build-linux]
     steps:
@@ -57,9 +56,7 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
+          prerelease: false 
           files: |
               bpc
               bpc.exe
