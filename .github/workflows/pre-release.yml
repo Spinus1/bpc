@@ -19,7 +19,7 @@ jobs:
       with:
         path: src
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: bpc.exe
         path: src/dist/windows
@@ -36,7 +36,7 @@ jobs:
       with:
         path: src
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: bpc
         path: src/dist/linux
