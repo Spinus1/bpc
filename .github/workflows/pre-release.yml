@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.1.0
 
     - name: Package Windows Application
       uses: JackMcKew/pyinstaller-action-windows@main
@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.1.0
 
     - name: Package Linux Application
       uses: JackMcKew/pyinstaller-action-linux@main
